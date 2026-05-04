@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comprehensive System Documentation - Ai.sport</title>
+    <script type="module">
+      import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+      mermaid.initialize({ 
+          startOnLoad: true, 
+          theme: 'neutral',
+          fontFamily: 'Inter, sans-serif',
+          er: {
+            diagramPadding: 20,
+            layoutDirection: 'TB',
+            minEntityWidth: 100,
+            minEntityHeight: 60,
+            entityPadding: 15,
+            stroke: 'gray',
+            fill: 'honeydew'
+          },
+          flowchart: { curve: 'basis' },
+          sequence: { actorMargin: 50 }
+      });
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background: #f8f9fa; 
+            color: #333; 
+            padding: 40px; 
+            margin: 0;
+        }
+        h1 { text-align: center; color: #2c3e50; margin-bottom: 10px; font-size: 2.5rem; }
+        p.desc { text-align: center; color: #7f8c8d; margin-bottom: 40px; font-size: 1.1rem; max-width: 800px; margin-left: auto; margin-right: auto;}
+        .diagram-section {
+            background: white;
+            padding: 40px 20px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            margin-bottom: 50px;
+            text-align: center;
+            border: 1px solid #e1e8ed;
+        }
+        .diagram-section h2 {
+            color: #34495e;
+            border-bottom: 3px solid #3498db;
+            display: inline-block;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+            font-size: 1.8rem;
+        }
+        .diagram-desc {
+            color: #7f8c8d;
+            margin-bottom: 30px;
+            font-size: 1rem;
+        }
+        .mermaid { display: flex; justify-content: center; overflow-x: auto; width: 100%; }
+        .btn-print {
+            display: block; width: 250px; margin: 0 auto 30px auto; background: #3498db; color: white;
+            padding: 12px 20px; text-align: center; text-decoration: none; border-radius: 8px;
+            font-weight: bold; cursor: pointer; border: none; font-size: 1rem;
+        }
+        .btn-print:hover { background: #2980b9; }
+        @media print {
+            .btn-print { display: none; }
+            body { background: white; padding: 0; }
+            .diagram-section { box-shadow: none; border: none; padding: 0; margin-bottom: 60px; page-break-inside: avoid; }
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Ai.sport - Complete System Architecture 🎓</h1>
+    <p class="desc">This document contains the complete structural and behavioral diagrams of the Ai.sport platform. Any software engineer or stranger reviewing this will instantly understand the hardware, AI integrations, database structure, and user workflows.</p>
+    
+    <button class="btn-print" onclick="window.print()">Print / Save as PDF</button>
+
+    <!-- 1. System Architecture -->
+    <div class="diagram-section">
+        <h2>1. System Architecture (High-Level)</h2>
+        <p class="diagram-desc">Shows how Hardware (IoT), Backend, AI Engine, and Frontend interfaces communicate.</p>
+        <div class="mermaid">
+            flowchart TD
+                subgraph Hardware_Layer [IoT Hardware Layer]
+                    ESP[ESP32 Microcontroller]
+                    Sensors[Heart Rate & Accelerometer]
+                    Sensors -.->|Reads| ESP
+                end
+
+                subgraph Backend_Layer [FastAPI Backend & AI Core]
+                    API[FastAPI Server]
+                    WS[WebSocket Manager]
+                    DB[(PostgreSQL / SQLite)]
+                    
+                    subgraph ML_Engine [Machine Learning Engine]
+                        XGB[XGBoost - Injury Risk]
+                        RF[Random Forest - Fatigue]
+                    end
+                    
+                    API <--> DB
+                    API <--> ML_Engine
+                    API <--> WS
+                end
+
+                subgraph Presentation_Layer [Client Applications]
+                    Web[Web Dashboard]
+                    Mobile[Flutter Mobile App]
+                end
+
+                ESP == "Wi-Fi (JSON Payload)" ==> API
+                Web <== "HTTP REST & WebSockets" ==> API
+                Mobile <== "HTTP REST & WebSockets" ==> API
+        </div>
+    </div>
+
+    <!-- 2. Detailed ERD -->
+    <div class="diagram-section">
+        <h2>2. Comprehensive Entity-Relationship Diagram (ERD)</h2>
+        <p class="diagram-desc">The complete database schema including all 14 entities and their relationships.</p>
+        <div class="mermaid">
+            erDiagram
+                USERS {
+                    int id PK
+                    string role "Admin, Coach, Athlete"
+                    string first_name
+                    string email
+                    boolean has_injury
+                    int training_days
+                }
+                GYM_MEMBERSHIPS {
+                    int id PK
+                    date start_date
+                    date end_date
+                    string status
+                }
+                WORKOUT_CLASSES {
+                    int id PK
+                    string class_name
+                    datetime schedule
+                    int capacity
+                }
+                CLASS_ENROLLMENTS {
+                    int id PK
+                    string status
+                }
+                PAYMENT_INVOICES {
+                    int id PK
+                    float amount
+                    string status
+                }
+                SENSOR_DATA {
+                    int id PK
+                    float heart_rate
+                    int steps
+                    float calories
+                }
+                PERFORMANCE_METRICS {
+                    int id PK
+                    string fatigue_level
+                    float endurance_score
+                }
+                AI_PREDICTIONS {
+                    int id PK
+                    float injury_risk
+                    string recommendation
+                    boolean is_alert_sent
+                }
+                TRAINING_PLANS {
+                    int id PK
+                    string plan_text
+                }
+                SLEEP_DATA {
+                    int id PK
+                    float sleep_hours
+                    int quality_score
+                }
+                EXERCISE_LOGS {
+                    int id PK
+                    string exercise_name
+                    float max_weight
+                }
+
+                USERS ||--o{ GYM_MEMBERSHIPS : "Subscribes"
+                USERS ||--o{ PAYMENT_INVOICES : "Pays"
+                USERS ||--o{ CLASS_ENROLLMENTS : "Enrolls in"
+                USERS ||--o{ SENSOR_DATA : "Generates"
+                USERS ||--o{ PERFORMANCE_METRICS : "Has metrics"
+                USERS ||--o{ AI_PREDICTIONS : "Receives"
+                USERS ||--o{ SLEEP_DATA : "Logs"
+                USERS ||--o{ EXERCISE_LOGS : "Logs weights"
+                WORKOUT_CLASSES ||--o{ CLASS_ENROLLMENTS : "Contains"
+                AI_PREDICTIONS ||--o| TRAINING_PLANS : "Basis for"
+        </div>
+    </div>
+
+    <!-- 3. Comprehensive Use Case Diagram -->
+    <div class="diagram-section">
+        <h2>3. Complete Use Case Diagram</h2>
+        <p class="diagram-desc">Illustrates all system actors (including IoT/AI) and every possible interaction they can perform.</p>
+        <div class="mermaid">
+            flowchart LR
+                Athlete(((Athlete)))
+                Coach(((Coach)))
+                Admin(((Admin)))
+                AI(((AI Engine)))
+                IoT(((IoT ESP32)))
+
+                subgraph Ai_Sport_System [Ai.sport Platform]
+                    direction TB
+                    
+                    UC_Health([View Live Health Dashboard])
+                    UC_Sleep([Log Sleep & Weights])
+                    UC_Plan([Receive AI Training Plan])
+                    UC_SOS([Send Emergency SOS])
+                    
+                    UC_Team([Monitor Live Team Analytics])
+                    UC_Alerts([Receive Critical Alerts])
+                    UC_ManageClasses([Manage Classes & Advice])
+                    UC_Config([Tune AI Thresholds])
+                    
+                    UC_ManageUsers([Manage Staff & Athletes])
+                    UC_Finance([View Financial Reports])
+                    UC_Retrain([Retrain ML Models])
+                    
+                    UC_Stream([Stream Vitals Data])
+                    UC_Analyze([Predict Risk & Fatigue])
+                end
+
+                Athlete ==> UC_Health
+                Athlete ==> UC_Sleep
+                Athlete ==> UC_Plan
+                Athlete ==> UC_SOS
+
+                Coach ==> UC_Team
+                Coach ==> UC_Alerts
+                Coach ==> UC_ManageClasses
+                Coach ==> UC_Config
+
+                Admin ==> UC_ManageUsers
+                Admin ==> UC_Finance
+                Admin ==> UC_Retrain
+
+                IoT -.->|HTTP POST| UC_Stream
+                UC_Stream -.->|Triggers| UC_Analyze
+                AI ==> UC_Analyze
+                AI ==> UC_Plan
+                UC_Analyze -.->|Triggers WebSockets| UC_Alerts
+        </div>
+    </div>
+
+    <!-- 4. Real-Time Data Flow (Sequence Diagram) -->
+    <div class="diagram-section">
+        <h2>4. Real-Time AI Alerting Flow (Sequence Diagram)</h2>
+        <p class="diagram-desc">Demonstrates the project's core feature: the split-second journey of data from the hardware to the coach's screen when danger is detected.</p>
+        <div class="mermaid">
+            sequenceDiagram
+                autonumber
+                participant IoT as Athlete Wearable (ESP32)
+                participant API as FastAPI Backend
+                participant ML as AI Engine (XGBoost)
+                participant WS as WebSocket Manager
+                participant Coach as Coach Dashboard
+
+                IoT->>API: HTTP POST /sensor-data (HR: 185, Steps: 4000)
+                API->>ML: Pass data for risk evaluation
+                Note over ML: Models calculate <br/>fatigue & injury risk
+                ML-->>API: Return Result (Risk: 88%)
+                API->>API: Save to Database (AIPredictions)
+                
+                alt If Risk > Safe Threshold
+                    API->>WS: Trigger URGENT_ALERT event
+                    WS-->>Coach: Instant WebSocket Push (Danger Alert)
+                else If Risk is Normal
+                    API-->>IoT: HTTP 200 OK (Data Logged)
+                end
+        </div>
+    </div>
+
+</body>
+</html>
