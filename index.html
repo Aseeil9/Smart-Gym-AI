@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="ar" id="html-root" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart-Gym-Ai | Advanced Sports Analytics</title>
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Cairo:wght@400;600;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="assets/css/style.css?v=2">
+</head>
+
+<body>
+    <div class="background-effects">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+    </div>
+
+    <!-- Portal View (Login Selection) -->
+    <main id="view-portal" class="portal-view fade-in">
+        <div class="text-center mb-5">
+            <h1 class="sidebar-logo" style="font-size: 4rem;">Smart-Gym-Ai</h1>
+            <p class="text-muted" data-i18n="portal-subtitle">نظام التحليل الرياضي المدعوم بالذكاء الاصطناعي</p>
+        </div>
+        <div class="dashboard-grid container" style="max-width: 1200px;">
+            <div class="glass-card portal-card col-4" onclick="showLogin('Athlete')">
+                <div class="portal-icon">🏃</div>
+                <h3 data-i18n="role-athlete">بوابة المشتركين</h3>
+                <p data-i18n="role-athlete-desc">مراقبة أدائك وخطط التدريب</p>
+            </div>
+            <div class="glass-card portal-card col-4" onclick="showLogin('Coach')">
+                <div class="portal-icon">📋</div>
+                <h3 data-i18n="role-coach">بوابة المدربين</h3>
+                <p data-i18n="role-coach-desc">إدارة الفريق والتحليلات الحية</p>
+            </div>
+            <div class="glass-card portal-card col-4" onclick="showLogin('Admin')">
+                <div class="portal-icon">⚙️</div>
+                <h3 data-i18n="role-admin">بوابة الإدارة</h3>
+                <p data-i18n="role-admin-desc">إدارة النظام والمالية</p>
+            </div>
+        </div>
+        <!-- System Architecture & AI Explanation Section -->
+        <div class="architecture-section container mt-5 fade-in text-start">
+            <h2 class="text-center mb-5"><i data-lucide="network"></i> دورة حياة البيانات وهندسة الذكاء الاصطناعي (System Architecture)</h2>
+            
+            <div class="arch-step glass-card mb-3" style="border-inline-start: 4px solid var(--neon-blue);">
+                <div class="arch-icon blue"><i data-lucide="watch"></i></div>
+                <div class="arch-content">
+                    <h3>1. مصدر البيانات (IoT Hardware)</h3>
+                    <p>يقوم الهاردوير (ESP32) بقراءة المؤشرات الحيوية للمشترك باستمرار (نبض القلب، السعرات، والخطوات). تُرسل هذه القراءات لحظياً باستخدام بروتوكولات الاتصال المباشر لضمان وصول البيانات الدقيقة بلا انقطاع.</p>
+                </div>
+            </div>
+
+            <div class="arch-step glass-card mb-3" style="border-inline-start: 4px solid var(--neon-purple);">
+                <div class="arch-icon purple"><i data-lucide="server"></i></div>
+                <div class="arch-content">
+                    <h3>2. المضيف والمعالج (Backend API)</h3>
+                    <p>يلتقط خادم <strong>FastAPI</strong> البيانات الواردة. يخزنها في قواعد الـ Database (SQLite) لتحليلها تاريخياً، وفي نفس الجزء من الثانية، يحول القراءات الحالية إلى <strong>محرك الذكاء الاصطناعي (ML Engine)</strong>.</p>
+                </div>
+            </div>
+
+            <div class="arch-step glass-card mb-3" style="border-inline-start: 4px solid var(--neon-gold);">
+                <div class="arch-icon accent"><i data-lucide="brain-circuit"></i></div>
+                <div class="arch-content">
+                    <h3>3. محرك الذكاء الاصطناعي <small class="badge badge-warning" style="margin-inline-start: 10px;">لماذا هذه النماذج؟</small></h3>
+                    <p>المشروع يستخدم نماذج تعلم آلة تم اختيارها بعناية فائقة:</p>
+                    <ul style="margin-top: 10px; margin-inline-start: 25px; line-height: 1.8; color: var(--text-muted);">
+                        <li><strong>نموذج XGBoost (للتنبؤ بالإصابات):</strong> اختير هذا النموذج خصيصاً لأنه يتفوق في التعامل مع البيانات غير المتوازنة ويستخرج العلاقات غير الخطية المخفية بين المجهود ونبضات القلب، ليقدم احتمالية مئوية (Risk%) دقيقة لحصول إصابة عضلية.</li>
+                        <li><strong>نموذج Random Forest (لتصنيف الإجهاد):</strong> تم استخدامه لقوته العالية ضد التشتت والـ Overfitting. يقوم بتصنيف إجهاد المشترك بناءً على أشجار قرار متعددة لتخريج نتيجة قاطعة وموثوقة (إجهاد منخفض، متوسط، عالي).</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="arch-step glass-card mb-3" style="border-inline-start: 4px solid var(--neon-green);">
+                <div class="arch-icon green"><i data-lucide="zap"></i></div>
+                <div class="arch-content">
+                    <h3>4. التدخل اللحظي (WebSockets Actions)</h3>
+                    <p>بمجرد أن يُقرر موديل الـ ML وجود خطر، تنطلق استجابة طارئة فورية من السيرفر عبر تقنية <strong>WebSockets</strong> لتظهر في شاشة المدرب وشاشة المشترك معاً، من أجل إيقاف التمرين ومنع الإصابة قبل وقوعها.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-5 text-center">
+            <button class="btn btn-outline" onclick="toggleLanguage()">
+                <i data-lucide="languages"></i> <span id="lang-text">English</span>
+            </button>
+        </div>
+    </main>
+
+    <!-- Login View -->
+    <main id="view-login" class="portal-view fade-in" style="display: none;">
+        <div class="glass-card" style="width: 100%; max-width: 450px; padding: 40px;">
+            <h2 class="mb-4" data-i18n="login-title">تسجيل الدخول</h2>
+            <p id="login-subtitle" class="text-muted mb-4">يرجى إدخال بياناتك للمتابعة</p>
+            <div class="input-group text-start">
+                <label data-i18n="email-label">البريد الإلكتروني</label>
+                <input type="email" id="login-email" placeholder="example@gym.com">
+            </div>
+            <div class="input-group text-start">
+                <label data-i18n="pass-label">كلمة المرور</label>
+                <input type="password" id="login-password" placeholder="••••••••">
+            </div>
+            <button class="btn btn-primary w-100" onclick="performLogin()" data-i18n="login-btn">دخول للمنصة</button>
+            <button class="btn btn-outline w-100 mt-3" onclick="backToPortal()" data-i18n="back-btn">رجوع للرئيسية</button>
+            <div id="login-error" class="error-text"></div>
+        </div>
+    </main>
+
+    <!-- Main Dashboard Layout -->
+    <div id="dashboard-layout" class="app-container" style="display: none;">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-logo">Smart-Gym-Ai</div>
+            <nav class="nav-links">
+                <!-- Athlete Nav -->
+                <div id="nav-athlete" style="display: none;">
+                    <a class="nav-link active" onclick="switchTab('ath-summary')"><i data-lucide="layout-dashboard"></i> <span data-i18n="nav-overview">نظرة عامة</span></a>
+                    <a class="nav-link" onclick="switchTab('ath-training')"><i data-lucide="dumbbell"></i> <span data-i18n="nav-training">خطة التمرين</span></a>
+                    <a class="nav-link" onclick="switchTab('ath-health')"><i data-lucide="heart-pulse"></i> <span data-i18n="nav-health">المقاييس الصحية</span></a>
+                    <a class="nav-link" onclick="switchTab('ath-simulator')"><i data-lucide="cpu"></i> <span data-i18n="nav-simulator">المحاكي (IoT)</span></a>
+                    <a class="nav-link" onclick="switchTab('ath-community')"><i data-lucide="users"></i> <span data-i18n="nav-community">المدربين والإعلانات</span></a>
+                </div>
+                <!-- Coach Nav -->
+                <div id="nav-coach" style="display: none;">
+                    <a class="nav-link active" onclick="switchTab('co-overview')"><i data-lucide="users"></i> <span data-i18n="nav-team">تحليل الفريق</span></a>
+                    <a class="nav-link" onclick="switchTab('co-management')"><i data-lucide="settings"></i> <span data-i18n="nav-classes">إدارة الحصص</span></a>
+                </div>
+                <div id="nav-admin" style="display: none;">
+                    <a class="nav-link active" onclick="switchTab('ad-finance')"><i data-lucide="bar-chart-3"></i> <span data-i18n="nav-finance">المركز المالي</span></a>
+                    <a class="nav-link" onclick="switchTab('ad-athletes')"><i data-lucide="users"></i> <span data-i18n="nav-users">إدارة المشتركين</span></a>
+                    <a class="nav-link" onclick="switchTab('ad-coaches')"><i data-lucide="shield-check"></i> <span data-i18n="nav-coaches">طاقم المدربين</span></a>
+                    <a class="nav-link" onclick="switchTab('ad-ai-system')"><i data-lucide="cpu"></i> <span data-i18n="nav-system">نظام الذكاء والسجلات</span></a>
+                    <a class="nav-link" onclick="switchTab('ad-maintenance')"><i data-lucide="wrench"></i> <span data-i18n="nav-maintenance">صيانة المرافق</span></a>
+                </div>
+            </nav>
+            <div class="sidebar-footer">
+                <button class="btn btn-danger w-100 mb-2" id="sos-btn" onclick="sendSOS()" style="display: none;"><i data-lucide="alert-triangle"></i> <span data-i18n="nav-sos">SOS طوارئ</span></button>
+                <button class="btn btn-outline w-100" onclick="logout()"><i data-lucide="log-out"></i> <span data-i18n="nav-logout">تسجيل خروج</span></button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="page-header">
+                <div class="page-title">
+                    <h1 id="user-welcome-msg">مرحباً بك</h1>
+                    <p id="user-sub-msg">طابت أوقاتك في النادي اليوم</p>
+                </div>
+                <div class="header-actions">
+                    <button class="btn btn-outline" onclick="toggleLanguage()"><i data-lucide="languages"></i></button>
+                </div>
+            </header>
+
+            <!-- Notification Banner -->
+            <div id="announcement-banner" class="glass-card mb-4" style="display: none; border-inline-start: 4px solid var(--neon-blue); padding: 15px;">
+                <marquee id="announcement-text" direction="right">...جاري جلب الإعلانات</marquee>
+            </div>
+
+            <!-- Dashboard Content Areas -->
+            <div id="athlete-dashboard" style="display: none;">
+                <!-- Tab: Summary -->
+                <div id="ath-summary" class="tab-pane active">
+                    <div class="announcement-banner">
+                        <div class="marquee"><p id="announcement-marquee">جاري جلب آخر المستجدات...</p></div>
+                    </div>
+                    <div class="dashboard-grid">
+                        <div class="glass-card col-4 stat-widget">
+                            <div class="stat-icon red"><i data-lucide="heart"></i></div>
+                            <div class="stat-info">
+                                <div class="label" data-i18n="ath-stat-hr">آخر نبض مسجل</div>
+                                <div class="value" id="summary-hr">-- BPM</div>
+                            </div>
+                        </div>
+                        <div class="glass-card col-4 stat-widget">
+                            <div class="stat-icon green"><i data-lucide="footprints"></i></div>
+                            <div class="stat-info">
+                                <div class="label" data-i18n="ath-stat-steps">إجمالي الخطوات اليوم</div>
+                                <div class="value" id="summary-steps">--</div>
+                            </div>
+                        </div>
+                        <div class="glass-card col-4 stat-widget">
+                            <div class="stat-icon blue"><i data-lucide="zap"></i></div>
+                            <div class="stat-info">
+                                <div class="label" data-i18n="ath-stat-cal">السعرات المحروقة اليوم</div>
+                                <div class="value" id="summary-cal">--</div>
+                            </div>
+                        </div>
+                        <div class="glass-card col-8 ai-stream">
+                            <h3 class="mb-3"><i data-lucide="brain"></i> تحليلات الذكاء الاصطناعي الحية</h3>
+                            <div id="alertsContainer" style="max-height: 300px; overflow-y: auto;">
+                                <div class="alert-box info">في انتظار البيانات الحيوية...</div>
+                            </div>
+                        </div>
+                        <div class="glass-card col-4">
+                            <h3 class="mb-3"><i data-lucide="shield-alert"></i> مستوى الإصابة</h3>
+                            <div class="text-center">
+                                <div id="risk-score-display" style="font-size: 3rem; font-weight: 800; color: var(--neon-green);">0%</div>
+                                <p class="text-muted mt-2">معدل خطر الإصابة الحالي</p>
+                            </div>
+                        </div>
+                        <div class="glass-card col-12">
+                            <h3>مخطط المجهود البدني (الأخير)</h3>
+                            <div style="height: 300px;"><canvas id="athleteChart"></canvas></div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Tab: Training -->
+                <div id="ath-training" class="tab-pane">
+                    <div class="dashboard-grid">
+                        <div class="glass-card col-6">
+                            <h3 class="mb-4">إعداد الملف التدريبي 👤</h3>
+                            <div class="input-group">
+                                <label>أيام التدريب في الإسبوع</label>
+                                <select id="training-days-input">
+                                    <option value="2">يومين</option>
+                                    <option value="3" selected>3 أيام</option>
+                                    <option value="5">5 أيام</option>
+                                </select>
+                            </div>
+                            <div class="input-group">
+                                <label>هل تعاني من إصابات؟</label>
+                                <div style="display:flex; gap:20px;">
+                                    <label><input type="radio" name="injury-radio" value="no" checked onchange="toggleInjuryDetails(false)"> لا</label>
+                                    <label><input type="radio" name="injury-radio" value="yes" onchange="toggleInjuryDetails(true)"> نعم</label>
+                                </div>
+                            </div>
+                            <div id="injury-details-group" class="input-group" style="display:none;">
+                                <label>تفاصيل الإصابة</label>
+                                <textarea id="injury-details-input" rows="2"></textarea>
+                            </div>
+                            <button class="btn btn-primary w-100" onclick="saveAthleteProfile()">تحديث الملف وتوليد الخطة</button>
+                        </div>
+                        <div class="glass-card col-6">
+                            <h3>خطة التمرين المقترحة 🗓️</h3>
+                            <div id="ai-plan-container" class="alert-box info mt-4" style="white-space: pre-line;">
+                                احفظ ملفك التدريبي لتوليد الخطة بالذكاء الاصطناعي..
+                            </div>
+                        </div>
+                        <div class="glass-card col-12">
+                            <h3>سجل الأوزان والتقدم 🦾</h3>
+                            <div style="display: flex; gap: 20px; align-items: flex-end;">
+                                <div class="input-group flex-1">
+                                    <label>التمرين</label>
+                                    <select id="exercise-name-input">
+                                        <option value="Bench Press">Bench Press</option>
+                                        <option value="Squat">Squat</option>
+                                        <option value="Deadlift">Deadlift</option>
+                                    </select>
+                                </div>
+                                <div class="input-group flex-1">
+                                    <label>الوزن (Kg)</label>
+                                    <input type="number" id="exercise-weight-input">
+                                </div>
+                                <div class="mb-4" style="display:flex; gap:10px;">
+                                    <button class="btn btn-primary" onclick="logExerciseWeight()">تسجيل</button>
+                                    <button class="btn btn-outline" onclick="getSmartWeightRecommendation()"><i data-lucide="brain"></i> نصيحة AI</button>
+                                </div>
+                            </div>
+                            <div id="weight-recommendation-box" class="alert-box info mt-2" style="display:none;"></div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Tab: Health -->
+                <div id="ath-health" class="tab-pane">
+                    <div class="dashboard-grid">
+                        <div class="glass-card col-6">
+                            <h3>تتبع جودة النوم 🌙</h3>
+                            <div class="slider-group mt-4">
+                                <label><span>ساعات النوم</span><span class="val" id="sleepHoursVal">7</span></label>
+                                <input type="range" id="sleepHoursSlider" min="0" max="15" step="0.5" value="7" oninput="document.getElementById('sleepHoursVal').innerText=this.value">
+                            </div>
+                            <button class="btn btn-accent w-100 mt-2" onclick="saveSleepData()">حفظ البيانات</button>
+                            <div id="sleep-ai-recommendation" class="alert-box info mt-3" style="display:none;"></div>
+                        </div>
+                        <div class="glass-card col-6">
+                            <h3>مخطط النوم الأسبوعي</h3>
+                            <div style="height: 250px;"><canvas id="sleepChart"></canvas></div>
+                        </div>
+                        <div class="glass-card col-12">
+                            <h3>مقارنة النشاط الأسبوعي 📈</h3>
+                            <div style="height: 300px;"><canvas id="comparisonChart"></canvas></div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Tab: Simulator -->
+                <div id="ath-simulator" class="tab-pane">
+                    <div class="glass-card col-8 mx-auto">
+                        <h2 class="mb-5"><i data-lucide="cpu"></i> محاكي الحساسات الحيوية (IoT Simulation)</h2>
+                        <div class="slider-group">
+                            <label><span>نبض القلب (BPM)</span><span class="val" id="hrValSim">80</span></label>
+                            <input type="range" id="hrSlider" min="50" max="220" value="80" oninput="document.getElementById('hrValSim').innerText=this.value">
+                        </div>
+                        <div class="slider-group">
+                            <label><span>الخطوات</span><span class="val" id="stepsValSim">1500</span></label>
+                            <input type="range" id="stepsSlider" min="0" max="10000" step="10" value="1500" oninput="document.getElementById('stepsValSim').innerText=this.value">
+                        </div>
+                        <div class="slider-group">
+                            <label><span>السعرات</span><span class="val" id="calValSim">300</span></label>
+                            <input type="range" id="calSlider" min="0" max="2000" step="10" value="300" oninput="document.getElementById('calValSim').innerText=this.value">
+                        </div>
+                        <button class="btn btn-primary w-100 mt-4" id="singleSimulateBtn" onclick="sendSensorData()">إرسال البيانات لمرة واحدة 📡</button>
+                        <button class="btn btn-accent w-100 mt-2" id="autoSimulateBtn" onclick="toggleAutoSimulate()" style="background: var(--neon-purple); color: white;">بدء المحاكاة المستمرة (التلقائية) 🔄</button>
+                    </div>
+                </div>
+                <!-- Tab: Community -->
+                <div id="ath-community" class="tab-pane">
+                    <div class="glass-card col-12">
+                        <h3 class="mb-4">طاقم المدربين المتواجدين 🏟️</h3>
+                        <div id="coaches-list" class="dashboard-grid"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Coach Dashboard Content -->
+            <div id="coach-dashboard" style="display: none;">
+                <div id="co-overview" class="tab-pane active">
+                    <div class="announcement-banner">
+                        <div class="marquee"><p id="coach-announcement-marquee">جاري جلب تنبيهات الإدارة...</p></div>
+                    </div>
+                    <div class="dashboard-grid">
+                        <div class="glass-card col-4 stat-widget">
+                            <div class="stat-icon purple"><i data-lucide="users"></i></div>
+                            <div class="stat-info">
+                                <div class="label" data-i18n="co-stat-active">المشتركين الأنشط</div>
+                                <div class="value" id="coach-active-count">0</div>
+                            </div>
+                        </div>
+                        <div class="glass-card col-4 stat-widget">
+                            <div class="stat-icon red"><i data-lucide="activity"></i></div>
+                            <div class="stat-info">
+                                <div class="label" data-i18n="co-stat-hr">متوسط النبض للفريق</div>
+                                <div class="value" id="coach-avg-hr">0</div>
+                            </div>
+                        </div>
+                        <div class="glass-card col-4 stat-widget">
+                            <div class="stat-icon green"><i data-lucide="footprints"></i></div>
+                            <div class="stat-info">
+                                <div class="label" data-i18n="co-stat-steps">إجمالي خطوات الفريق</div>
+                                <div class="value" id="coach-total-steps">0</div>
+                            </div>
+                        </div>
+                        <div class="glass-card col-8">
+                            <h3 class="mb-3">تنبيهات الحالات الحرجة 🚨</h3>
+                            <div id="team-analytics-content" style="max-height: 400px; overflow-y: auto;">
+                                <p class="text-muted">جاري فحص حالة الفريق...</p>
+                            </div>
+                        </div>
+                        <div class="glass-card col-4">
+                            <h3 class="mb-3">مستوى مجهود الفريق 📊</h3>
+                            <div style="height: 250px;"><canvas id="coachTeamChart"></canvas></div>
+                        </div>
+                        <div class="glass-card col-12">
+                            <h3 class="mb-4">إدارة الرياضيين</h3>
+                            <div class="input-group mb-3">
+                                <input type="text" id="coach-search-athlete" placeholder="ابحث عن رياضي..." oninput="filterTeamTable()">
+                            </div>
+                            <table class="premium-table">
+                                <thead>
+                                    <tr>
+                                        <th>الاسم</th>
+                                        <th>الحالة</th>
+                                        <th>آخر نبض</th>
+                                        <th>الإجراءات</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="coach-team-table-body"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <!-- Tab: Coach Management -->
+                <div id="co-management" class="tab-pane">
+                    <div class="dashboard-grid">
+                        <div class="glass-card col-6">
+                            <h3>إعدادات التواجد ونصيحة اليوم</h3>
+                            <div class="input-group mt-4">
+                                <label>ساعات العمل</label>
+                                <input type="text" id="coach-new-hours" placeholder="8:00 AM - 4:00 PM">
+                            </div>
+                            <div class="input-group">
+                                <label>نصيحة اليوم للمشتركين</label>
+                                <textarea id="coach-new-advice" rows="3"></textarea>
+                            </div>
+                            <button class="btn btn-primary w-100" onclick="updateCoachPublicInfo()">تحديث المعلومات</button>
+                        </div>
+                        <div class="glass-card col-6">
+                            <h3>معايير خطر الإصابة (AI Config)</h3>
+                            <div class="input-group mt-4">
+                                <label>حد النبض العالي (BPM)</label>
+                                <input type="number" id="coach-hr-limit" value="150">
+                            </div>
+                            <button class="btn btn-accent w-100" onclick="updateCoachParams()">حفظ المعايير</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Admin Dashboard Content -->
+            <div id="admin-dashboard" style="display: none;">
+                <!-- Tab: Finance -->
+                <div id="ad-finance" class="tab-pane active">
+                    <div class="dashboard-grid">
+                        <div class="glass-card col-3 stat-widget gold">
+                            <div class="stat-info">
+                                <div class="label">إجمالي الإيرادات</div>
+                                <div class="value" id="admin-total-revenue">0 SAR</div>
+                            </div>
+                        </div>
+                        <div class="glass-card col-3 stat-widget">
+                            <div class="stat-info">
+                                <div class="label">الاشتراكات النشطة</div>
+                                <div class="value" id="admin-active-memberships">0</div>
+                            </div>
+                        </div>
+                        <div class="glass-card col-3 stat-widget">
+                            <div class="stat-info">
+                                <div class="label">المشتركين الجدد (هذا الشهر)</div>
+                                <div class="value" id="admin-new-athletes">+14</div>
+                            </div>
+                        </div>
+                        <div class="glass-card col-3 stat-widget">
+                            <div class="stat-info">
+                                <div class="label">المدربين النشطين</div>
+                                <div class="value" id="admin-total-coaches">0</div>
+                            </div>
+                        </div>
+                        <div class="glass-card col-8">
+                            <h3>تحليل النمو المالي 📈</h3>
+                            <div style="height: 300px;"><canvas id="adminRevenueChart"></canvas></div>
+                        </div>
+                        <div class="glass-card col-4">
+                            <h3>إدارة وتفعيل الاشتراكات 💳</h3>
+                            <div class="input-group">
+                                <label>رقم المشترك (User ID)</label>
+                                <input type="number" id="admin-user-id" placeholder="مثال: 1045">
+                            </div>
+                            <div class="input-group">
+                                <label>تاريخ الانتهاء</label>
+                                <input type="date" id="admin-end-date">
+                            </div>
+                            <button class="btn btn-primary w-100 mt-2" onclick="createMembership()">تفعيل/تجديد الاشتراك</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab: Athletes -->
+                <div id="ad-athletes" class="tab-pane">
+                    <div class="dashboard-grid">
+                        <div class="glass-card col-4">
+                            <h3 class="mb-4">تسجيل مشترك جديد ➕</h3>
+                            <div class="input-group">
+                                <label>الاسم الأول</label>
+                                <input type="text" id="admin-new-user-fname">
+                            </div>
+                            <div class="input-group">
+                                <label>العائلة</label>
+                                <input type="text" id="admin-new-user-lname">
+                            </div>
+                            <div class="input-group">
+                                <label>البريد الإلكتروني</label>
+                                <input type="email" id="admin-new-user-email">
+                            </div>
+                            <div class="input-group">
+                                <label>رمز المرور الافتراضي</label>
+                                <input type="text" id="admin-new-user-pass" value="gym123">
+                            </div>
+                            <div class="input-group">
+                                <label>مدة الاشتراك</label>
+                                <select id="admin-new-user-duration">
+                                    <option value="1">شهر واحد</option>
+                                    <option value="3">3 أشهر</option>
+                                    <option value="6" selected>6 أشهر</option>
+                                    <option value="12">سنة كاملة</option>
+                                </select>
+                            </div>
+                            <button class="btn btn-primary w-100 mt-2" onclick="registerNewAthlete()">إنشاء ملف واشتراك 💳</button>
+                            <div id="admin-new-user-msg" class="mt-3 text-center" style="font-size: 0.9rem;"></div>
+                        </div>
+                        <div class="glass-card col-8">
+                            <h3 class="mb-4">قائمة المشتركين (Athletes) 🏃‍♂️</h3>
+                            <div class="input-group mb-3">
+                                <input type="text" placeholder="ابحث عن مشترك بالاسم أو الايميل..." oninput="/* search logic */">
+                            </div>
+                            <table class="premium-table">
+                                <thead>
+                                    <tr>
+                                        <th>رقم الـ ID</th>
+                                        <th>الاسم</th>
+                                        <th>البريد الإلكتروني</th>
+                                        <th>الإجراءات</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="admin-user-table-body">
+                                    <!-- Injected by JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab: Coaches -->
+                <div id="ad-coaches" class="tab-pane">
+                    <div class="dashboard-grid">
+                        <div class="glass-card col-12">
+                            <h3 class="mb-4">إدارة كادر التدريب 📋</h3>
+                            <table class="premium-table">
+                                <thead>
+                                    <tr>
+                                        <th>الاسم</th>
+                                        <th>التخصص</th>
+                                        <th>تقييم الأداء</th>
+                                        <th>ساعات التواجد</th>
+                                        <th>الإجراءات</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>الكابتن أحمد</td>
+                                        <td>لياقة وتخسيس</td>
+                                        <td>⭐ 4.8</td>
+                                        <td>8:00 ص - 4:00 م</td>
+                                        <td><button class="btn btn-sm">إدارة</button></td>
+                                    </tr>
+                                    <tr>
+                                        <td>الكابتن سارة</td>
+                                        <td>يوجا وبيلاتس</td>
+                                        <td>⭐ 4.9</td>
+                                        <td>4:00 م - 10:00 م</td>
+                                        <td><button class="btn btn-sm">إدارة</button></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <button class="btn btn-accent mt-4">إضافة مدرب جديد +</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab: AI System -->
+                <div id="ad-ai-system" class="tab-pane">
+                    <div class="dashboard-grid">
+                        <div class="glass-card col-6">
+                            <h3>نظرة الإدارة لمؤشرات الذكاء الاصطناعي 🤖</h3>
+                            <p class="text-muted mb-3">حالة المشتركين بناءً على محرك ML_Engine بشكل حي</p>
+                            <div style="height: 250px;"><canvas id="adminAIStatsChart"></canvas></div>
+                        </div>
+                        <div class="glass-card col-6">
+                            <h3>سجل النظام المباشر (System Logs) ⚡</h3>
+                            <p class="text-muted mb-3">يسجل العمليات الحرجة التي تتم على مستوى قواعد البيانات</p>
+                            <div id="admin-system-logs" style="max-height: 250px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px;">
+                                <!-- Logs will be injected here via JS -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab: Maintenance -->
+                <div id="ad-maintenance" class="tab-pane">
+                    <div class="dashboard-grid">
+                        <div class="glass-card col-12">
+                            <h3 class="mb-4">إدارة وحالة مرافق النادي والأجهزة 🔧</h3>
+                            <table class="premium-table">
+                                <thead>
+                                    <tr>
+                                        <th>رقم الجهاز/المرفق</th>
+                                        <th>النوع</th>
+                                        <th>الحالة الحالية</th>
+                                        <th>ملاحظات الصيانة</th>
+                                        <th>تحديث</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>TRD-01</td>
+                                        <td>جهاز المشي (Treadmill)</td>
+                                        <td><span class="badge badge-safe">جيد ويعمل</span></td>
+                                        <td><input type="text" id="note-TRD-01" placeholder="أضف ملاحظة..." style="width:100%; border:1px solid rgba(255,255,255,0.2); background:transparent; color:white; padding:5px; border-radius:5px;"></td>
+                                        <td><button class="btn btn-sm btn-primary" onclick="saveMaintenanceNote('TRD-01')">حفظ</button></td>
+                                    </tr>
+                                    <tr>
+                                        <td>AC-04</td>
+                                        <td>تكييف صالة الحديد</td>
+                                        <td><span class="badge badge-warning" style="background:#ffb700; color:#000;">يحتاج تنظيف فلاتر</span></td>
+                                        <td><input type="text" id="note-AC-04" value="المروحة تصدر صوتاً" style="width:100%; border:1px solid rgba(255,255,255,0.2); background:transparent; color:white; padding:5px; border-radius:5px;"></td>
+                                        <td><button class="btn btn-sm btn-primary" onclick="saveMaintenanceNote('AC-04')">حفظ</button></td>
+                                    </tr>
+                                    <tr>
+                                        <td>SENS-12</td>
+                                        <td>حساس نبضات (IoT)</td>
+                                        <td><span class="badge badge-danger" style="background:#ff0055; color:#fff;">متعطل - يحتاج استبدال</span></td>
+                                        <td><input type="text" id="note-SENS-12" value="البطارية فارغة تماماً ولا تشحن" style="width:100%; border:1px solid rgba(255,255,255,0.2); background:transparent; color:white; padding:5px; border-radius:5px;"></td>
+                                        <td><button class="btn btn-sm btn-primary" onclick="saveMaintenanceNote('SENS-12')">حفظ</button></td>
+                                    </tr>
+                                    <tr>
+                                        <td>WH-01</td>
+                                        <td>سخانات تبديل الملابس</td>
+                                        <td><span class="badge badge-safe">جيد ويعمل</span></td>
+                                        <td><input type="text" id="note-WH-01" placeholder="أضف ملاحظة..." style="width:100%; border:1px solid rgba(255,255,255,0.2); background:transparent; color:white; padding:5px; border-radius:5px;"></td>
+                                        <td><button class="btn btn-sm btn-primary" onclick="saveMaintenanceNote('WH-01')">حفظ</button></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <button class="btn btn-accent mt-4">تسجيل جهاز جديد +</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modals -->
+    <div id="athlete-details-modal" class="modal-overlay" style="display:none;">
+        <div class="glass-card modal-content">
+            <div class="page-header">
+                <h2 id="modal-athlete-name">تفاصيل الرياضي</h2>
+                <button class="btn btn-outline" onclick="closeAthleteModal()">&times;</button>
+            </div>
+            <p id="modal-athlete-info" class="text-muted"></p>
+            <div id="modal-injury-alert" class="alert-box danger mt-3" style="display:none;">
+                <strong>⚠️ تفاصيل الإصابة:</strong> <span id="modal-injury-text"></span>
+                <button class="btn btn-outline btn-sm mt-3" onclick="markAthleteRecovered()">تأكيد التعافي</button>
+            </div>
+            <div class="dashboard-grid mt-4">
+                <div class="glass-card col-6">
+                    <div style="height: 200px;"><canvas id="modalAthleteChart"></canvas></div>
+                </div>
+                <div class="glass-card col-6">
+                    <ul id="modal-exercise-list"></ul>
+                </div>
+            </div>
+            <div class="glass-card mt-4">
+                <h3>إرسال تعليمات مباشرة</h3>
+                <textarea id="coach-direct-msg" class="w-100 mt-2" style="background:rgba(0,0,0,0.2); border:1px solid var(--glass-border); color:white; border-radius:10px; padding:10px;" rows="2" placeholder="اكتب تعليماتك هنا..."></textarea>
+                <button class="btn btn-primary w-100 mt-2" onclick="sendDirectInstruction()">إرسال التنبيه</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modular Scripts for Professional Structure -->
+    <script src="assets/js/api.js?v=5"></script>
+    <script src="assets/js/translations.js?v=5"></script>
+    <script src="assets/js/ui.js?v=5"></script>
+    <script src="assets/js/auth.js?v=5"></script>
+    <script src="assets/js/athlete.js?v=5"></script>
+    <script src="assets/js/coach.js?v=5"></script>
+    <script src="assets/js/admin.js?v=5"></script>
+    <script>
+        // Auto-login if token exists
+        document.addEventListener('DOMContentLoaded', () => {
+            if(localStorage.getItem('gymToken')) {
+                loadProfileAndDashboard();
+            }
+        });
+    </script>
+</body>
+</html>
