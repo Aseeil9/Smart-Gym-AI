@@ -3,6 +3,8 @@ import numpy as np
 import pandas as pd
 import json
 import os
+import tensorflow as tf
+from tensorflow.keras.models import load_model
 
 # --- 1. Load Pre-trained ML Models ---
 try:
@@ -19,9 +21,18 @@ try:
     else:
         scaler = None
     MODELS_LOADED = True
+    
+    dl_model_path = os.path.join(models_dir, 'fatigue_dl_model.h5')
+    if os.path.exists(dl_model_path):
+        dl_fatigue_model = load_model(dl_model_path)
+        dl_scaler = joblib.load(os.path.join(models_dir, 'dl_scaler.pkl'))
+        USE_DL_MODEL = True
+    else:
+        USE_DL_MODEL = False
 except Exception as e:
     print(f"Warning: ML Models not found in {models_dir}. Using fallback logic. ({e})")
     MODELS_LOADED = False
+    USE_DL_MODEL = False
     scaler = None
 
 # --- 1.1 Coach Thresholds (Dynamic Adjustments) ---
@@ -89,7 +100,14 @@ def analyze_sensor_data(raw_sensor_data: dict) -> dict:
         proba_injury = injury_model.predict_proba(X_input)
         injury_risk_score = round(float(proba_injury[0][1]), 2)
         
-        prediction_fatigue = fatigue_model.predict(X_input)[0] 
+        if USE_DL_MODEL:
+            # Prepare data for DL model
+            X_dl_input = dl_scaler.transform([[clean_data["heart_rate_raw"], clean_data["steps_raw"], clean_data["calories_raw"]]])
+            prediction_fatigue_probs = dl_fatigue_model.predict(X_dl_input, verbose=0)
+            prediction_fatigue = np.argmax(prediction_fatigue_probs[0])
+        else:
+            prediction_fatigue = fatigue_model.predict(X_input)[0] 
+            
         fatigue_map = {0: "Low", 1: "Medium", 2: "High"}
         fatigue_prediction_label = fatigue_map.get(prediction_fatigue, "Medium")
     else:

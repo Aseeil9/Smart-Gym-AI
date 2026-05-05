@@ -1,0 +1,17 @@
+fastapi
+uvicorn
+sqlalchemy
+pydantic
+email-validator
+websockets
+scikit-learn
+xgboost
+pandas
+numpy
+joblib
+passlib
+bcrypt
+python-jose
+cryptography
+python-multipart
+tensorflow
