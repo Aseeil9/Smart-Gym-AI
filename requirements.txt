@@ -14,4 +14,4 @@ bcrypt
 python-jose
 cryptography
 python-multipart
-tensorflow
+tensorflow-cpu
